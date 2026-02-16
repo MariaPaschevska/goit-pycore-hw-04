@@ -1,5 +1,8 @@
 # Це простий бот-асистент, який може обробляти базові команди для керування контактами
 # Розбираємо вхідні дані на команду та аргументи
+import re
+
+
 def parse_input(user_input):
     cmd, *args = user_input.split()
     cmd = cmd.strip().lower()
@@ -7,27 +10,37 @@ def parse_input(user_input):
 
 # Команда для додавання контакту: "add <name> <phone>"
 def add_contact(args, contacts):
-    name, phone = args
-    contacts[name] = phone
-    return "Contact added."
+    if len(args) >= 2:
+        name, phone = args
+        contacts[name] = phone
+        return "Contact added."
+    else:
+        return "Error: 'add' command requires name and phone number."
 
 # Команда для зміни номера контакту: "change <name> <new_phone>"
 def change_contact(args, contacts):
-    name, phone = args
-    if name in contacts:
-        contacts[name] = phone
-        return "Contact updated."
-    else:        
-        return f"Contact '{name}' not found."
+    if len(args) >= 2:
+        name, phone = args
+        if name in contacts:
+            contacts[name] = phone
+            return "Contact updated."
+        else:        
+            return f"Contact '{name}' not found."
+    else:
+        return "Error: 'change' command requires name and new phone number."
 
 
 # Вивести номер зазначеного контакту: "phone <name>"
 def get_phone(args, contacts):
-    name = args[0]
-    if name in contacts:
-        return f"{name}'s phone number: {contacts[name]}"
+    if len(args) >= 1:
+        name = args[0]
+        if name in contacts:
+            return f"{name}'s phone number: {contacts[name]}"
+        else:
+            return f"Contact '{name}' not found."
+               
     else:
-        return f"Contact '{name}' not found."
+        return "Error: 'phone' command requires a name."
 
 # Вивести усі контакти
 def list_contacts(contacts):
@@ -49,22 +62,13 @@ def main():
         elif command == "hello":
             print("How can I help you?")
         elif command == "add":
-            if len(args) >= 2:
-                print(add_contact(args, contacts))
-            else:
-                print("Error: 'add' command requires name and phone number.")
+            print(add_contact(args, contacts))
         elif command == "change": 
-            if len(args) >= 2:
-                print(change_contact(args, contacts))
-            else:
-                print("Error: 'change' command requires name and new phone number.")
+            print(change_contact(args, contacts))
         elif command == "all":
             print(list_contacts(contacts))
         elif command == "phone":
-            if len(args) >= 1:
-                print(get_phone(args, contacts))
-            else:
-                print("Error: 'phone' command requires a name.")
+            print(get_phone(args, contacts))
         else:
             print("Invalid command.")
 
